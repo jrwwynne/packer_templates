@@ -1,0 +1,37 @@
+{
+
+"builders": [{
+    "type": "amazon-ebs",
+    "region": "ap-southeast-2",
+    "instance_type": "t2.medium",
+    "encrypt_boot": true,
+    "KMS_Key_ID": "bf6401cb-8d0b-4b3a-8f23-8bec44d36adf",
+    "ami_name": "Bastion Host {{timestamp}}",
+    "user_data_file": "https://s3-ap-southeast-2.amazonaws.com/jwpackertemplates/Set_WinRM.ps1",
+    "communicator": "winrm",
+    "winrm_username": "Administrator",
+    "winrm_use_ssl": true,
+    "winrm_insecure": true,
+    "source_ami_filter": {
+      "filters": {
+        "name": "Windows_Server-2016-English-Full-Base-*"
+      },
+      "most_recent": true
+    }
+      }],
+      "provisioners": [
+        {"type": "powershell",
+          "scripts": [
+           "https://s3-ap-southeast-2.amazonaws.com/jwpackertemplates/Bastion_Software_Install.ps1"
+          ]
+         },
+        {
+            "type": "powershell",
+            "inline": [
+                "C:\\ProgramData\\Amazon\\EC2-Windows\\Launch\\Scripts\\InitializeInstance.ps1 -Schedule",
+                "C:\\ProgramData\\Amazon\\EC2-Windows\\Launch\\Scripts\\SysprepInstance.ps1 -NoShutdown"
+
+            ]
+          }]
+
+}
